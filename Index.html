@@ -67,7 +67,7 @@
   <h1>오프라인 게임 모음</h1>
   <p class="info">
     "+ 게임 파일 추가" 버튼 눌러 .html 파일 선택하면 자동 등록돼요!<br>
-    (선택한 파일 이름이 게임 제목이 됩니다)
+    (Ruffle/Unity 게임은 로컬에서 검은 화면 뜰 수 있어요. 해결법은 아래 에러 메시지 참조)
   </p>
 
   <div class="menu" id="menu"></div>
@@ -78,6 +78,12 @@
   <div class="error-screen" id="errorScreen" style="display:none;">
     <h2>문제가 발생했습니다 :'(</h2>
     <pre id="errorInfo"></pre>
+    <p style="color:#888; margin-top:20px;">
+      **로컬에서 Ruffle/Unity 게임이 안 될 때 해결법**<br>
+      1. Chrome 확장 "Web Server for Chrome" 설치 → 폴더 선택 → localhost로 실행<br>
+      2. GitHub Pages에 업로드해서 온라인으로 플레이 (https 프로토콜이라 대부분 해결)<br>
+      3. 친구한테 부탁해서 집 PC에서 테스트
+    </p>
     <button onclick="hideError()">닫기</button>
   </div>
 
@@ -95,14 +101,14 @@
         btn.className = 'game-card';
         btn.innerHTML = `
           ${game.name}
-          <button class="remove" onclick="removeGame(${index}); event.stopPropagation();">X</button>
+          <button class="remove-btn" onclick="removeGame(${index}); event.stopPropagation();">X</button>
         `;
         btn.onclick = () => playGame(game.url);
         menu.appendChild(btn);
       });
 
       if (games.length === 0) {
-        menu.innerHTML = '<p style="color:#888;">아직 게임이 없어요!<br>"+ 게임 파일 추가" 버튼 눌러서 시작하세요.</p>';
+        menu.innerHTML = '<p style="color:#888;">아직 게임이 없어요!<br>"+ 게임 파일 추가" 버튼 눌러서 .html 파일 선택하세요.</p>';
       }
     }
 
@@ -134,7 +140,7 @@
         alert(`"${game.name}" 게임이 추가됐어요!`);
       } catch (err) {
         console.error('파일 선택 오류:', err);
-        showError(`파일 선택 오류: ${err.message}\n\n로컬 파일에서 일부 게임(Ruffle/Unity)은 보안 제한으로 검은 화면이 뜰 수 있어요.\n확장 "Web Server for Chrome" 설치하거나 GitHub Pages로 온라인 실행 추천!`);
+        showError(`파일 선택 오류: ${err.message}\n\n로컬 파일에서 일부 게임(Ruffle/Unity)은 보안 제한으로 검은 화면이 뜰 수 있어요.\n\n해결:\n- "Web Server for Chrome" 확장으로 localhost 실행\n- GitHub Pages에 업로드해서 온라인 플레이`);
       }
     }
 
@@ -152,8 +158,12 @@
       frame.style.display = 'block';
       document.getElementById('backBtn').style.display = 'block';
 
+      frame.onload = () => {
+        // 로딩 성공 시 아무것도 안 함
+      };
+
       frame.onerror = () => {
-        showError('게임 로딩 실패\n\n원인 가능성:\n1. 파일이 손상됨\n2. 로컬 보안 제한 (Ruffle/Unity 게임은 file:///에서 자주 실패)\n\n해결:\n- "Web Server for Chrome" 확장으로 localhost 실행\n- GitHub Pages에 업로드해서 온라인 플레이');
+        showError('게임 로딩 실패\n\n원인 가능성:\n1. 파일이 손상됐거나 호환되지 않음\n2. 로컬 보안 제한 (Ruffle/Unity 게임은 file:///에서 자주 실패)\n\n해결:\n- Chrome 확장 "Web Server for Chrome" 설치 → localhost로 실행\n- GitHub Pages에 업로드해서 온라인 플레이\n- 다른 브라우저(Edge)로 시도');
       };
     }
 
