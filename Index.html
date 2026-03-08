@@ -1,126 +1,272 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>iframe 사이트 띄우기</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- 기본 탭 제목과 아이콘 (세팅에서 변경 가능) -->
+  <title>Google Docs - Untitled document</title>
+  <link id="favicon" rel="icon" href="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">
+
   <style>
-    body, html {
+    body {
       margin: 0;
-      padding: 0;
-      height: 100%;
-      overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #111;
-      color: #eee;
-    }
-    #container {
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    #header {
-      padding: 12px 16px;
-      background: #1a1a1a;
-      border-bottom: 1px solid #333;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    #url-input {
-      flex: 1;
-      padding: 8px 12px;
-      font-size: 15px;
-      border: 1px solid #444;
-      border-radius: 6px;
-      background: #222;
-      color: white;
-      outline: none;
-    }
-    #url-input:focus {
-      border-color: #0066ff;
-      box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
-    }
-    button {
-      padding: 8px 16px;
-      background: #0066ff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    button:hover {
-      background: #0055dd;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: white;
-    }
-    #error {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0,0,0,0.7);
-      padding: 20px 40px;
-      border-radius: 12px;
-      color: #ff6b6b;
-      display: none;
+      font-family: Arial, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
       text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ff9d;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #00ff9d;
+    }
+    .info {
+      color: #888;
+      margin-bottom: 30px;
+    }
+    .menu {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+    .game-card {
+      width: 240px;
+      height: 140px;
+      background: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .game-card:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(0,255,157,0.4);
+      border-color: #00ff9d;
+    }
+    .add-btn {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      padding: 12px 24px;
+      background: #00ff9d;
+      border: none;
+      color: black;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      z-index: 10000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .settings-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      padding: 10px 20px;
+      background: #0066ff;
+      border: none;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      z-index: 10000;
+    }
+    .settings-panel {
+      position: fixed;
+      top: 60px;
+      left: 15px;
+      background: #222;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
+      display: none;
+      z-index: 10000;
+      width: 340px;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: left;
+    }
+    .settings-panel input {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+      background: #333;
+      border: 1px solid #555;
+      color: white;
+      border-radius: 6px;
+    }
+    .save-btn {
+      width: 100%;
+      padding: 12px;
+      background: #00ff9d;
+      border: none;
+      color: black;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #gameFrame {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border: none;
+      display: none;
+      z-index: 9999;
+      background: #000;
+    }
+    #backBtn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 10000;
+      padding: 12px 24px;
+      background: #ff2d55;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      display: none;
     }
   </style>
 </head>
 <body>
+  <button class="settings-btn" onclick="toggleSettings()">설정 (탭 제목/아이콘 변경)</button>
+  <button class="add-btn" onclick="addGame()">+ 게임 파일 추가</button>
 
-<div id="container">
-  <div id="header">
-    <input type="text" id="url-input" placeholder="https://example.com" autofocus spellcheck="false"/>
-    <button onclick="loadURL()">열기</button>
+  <div class="settings-panel" id="settingsPanel">
+    <h3>탭 설정</h3>
+    <label>탭 제목:</label>
+    <input type="text" id="titleInput" value="Google Docs - Untitled document">
+
+    <label>아이콘 URL:</label>
+    <input type="text" id="iconInput" value="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">
+
+    <button class="save-btn" onclick="saveSettings()">저장</button>
   </div>
-  <iframe id="preview" src="about:blank"></iframe>
-</div>
 
-<div id="error">이 사이트는 iframe 차단(X-Frame-Options 또는 CSP)을 사용 중이라<br>여기서는 표시할 수 없습니다 😢</div>
+  <h1>오프라인 게임 모음</h1>
+  <p class="info">
+    "+ 게임 파일 추가" 버튼 눌러서 .html 파일 선택하기만 하면 자동 등록돼요!<br>
+    (선택한 파일 이름이 게임 제목이 됩니다)
+  </p>
 
-<script>
-const iframe = document.getElementById('preview');
-const input = document.getElementById('url-input');
-const errorDiv = document.getElementById('error');
+  <div class="menu" id="menu"></div>
 
-function loadURL() {
-  let url = input.value.trim();
-  
-  // http/https 자동 추가
-  if (url && !url.match(/^https?:\/\//i)) {
-    url = 'https://' + url;
-  }
-  
-  if (!url) {
-    alert('주소를 입력해주세요');
-    return;
-  }
+  <iframe id="gameFrame" allowfullscreen allow="fullscreen;pointer-lock;gamepad"></iframe>
+  <button id="backBtn" onclick="closeGame()">게임 종료하고 돌아가기</button>
 
-  errorDiv.style.display = 'none';
-  iframe.src = url;
-}
+  <script>
+    const menu = document.getElementById('menu');
+    let games = JSON.parse(localStorage.getItem('addedGames')) || []; // 추가된 게임 목록 저장
 
-// 엔터키로도 열리게
-input.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    loadURL();
-  }
-});
+    // 추가된 게임 메뉴 로드
+    function loadMenu() {
+      menu.innerHTML = '';
+      games.forEach(game => {
+        const btn = document.createElement('div');
+        btn.className = 'game-card';
+        btn.textContent = game.name;
+        btn.onclick = () => playGame(game.url);
+        menu.appendChild(btn);
+      });
 
-// 처음 열 때 인기 사이트 하나 정도 띄워놓기 (선택)
-window.addEventListener('load', () => {
-  input.value = 'https://www.google.com';
-  // loadURL();   ← 주석 풀면 자동으로 구글 열림
-});
-</script>
+      if (games.length === 0) {
+        menu.innerHTML = '<p style="color:#888;">아직 게임이 없어요!<br>"+ 게임 파일 추가" 버튼 눌러서 시작하세요.</p>';
+      }
+    }
 
+    loadMenu(); // 페이지 로드 시 메뉴 생성
+
+    async function addGame() {
+      try {
+        const pickerOpts = {
+          types: [{
+            description: 'HTML Files',
+            accept: {
+              'text/html': ['.html']
+            }
+          }],
+          multiple: false
+        };
+
+        const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
+        const file = await fileHandle.getFile();
+        const url = URL.createObjectURL(file);
+
+        const game = {
+          name: file.name.replace('.html', ''), // 파일 이름에서 .html 제거해서 제목으로 사용
+          url: url
+        };
+
+        games.push(game);
+        localStorage.setItem('addedGames', JSON.stringify(games));
+        loadMenu();
+
+        alert(`"${game.name}" 게임이 추가됐어요! 메뉴에서 클릭해서 플레이하세요.`);
+      } catch (err) {
+        console.error('파일 선택 오류:', err);
+        alert('파일 선택이 취소됐거나 오류가 발생했어요. 다시 시도해주세요.');
+      }
+    }
+
+    function playGame(url) {
+      document.getElementById('gameFrame').src = url;
+      document.getElementById('gameFrame').style.display = 'block';
+      document.getElementById('backBtn').style.display = 'block';
+    }
+
+    function closeGame() {
+      document.getElementById('gameFrame').src = '';
+      document.getElementById('gameFrame').style.display = 'none';
+      document.getElementById('backBtn').style.display = 'none';
+    }
+
+    function toggleSettings() {
+      const panel = document.getElementById('settingsPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function saveSettings() {
+      const newTitle = document.getElementById('titleInput').value;
+      const newIcon = document.getElementById('iconInput').value;
+
+      document.title = newTitle;
+      let link = document.getElementById('favicon') || document.createElement('link');
+      link.id = 'favicon';
+      link.rel = 'icon';
+      link.href = newIcon;
+      document.head.appendChild(link);
+
+      alert('탭 제목과 아이콘이 바뀌었어요!');
+      toggleSettings();
+    }
+
+    // 페이지 로드 시 기본 위장 적용
+    window.onload = () => {
+      document.title = "Google Docs - Untitled document";
+      let link = document.createElement('link');
+      link.id = 'favicon';
+      link.rel = 'icon';
+      link.href = "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico";
+      document.head.appendChild(link);
+    };
+  </script>
 </body>
 </html>
