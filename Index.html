@@ -4,70 +4,90 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <!-- 여기서 탭 제목과 아이콘만 바꾸면 끝! (기본은 Google Docs 위장) -->
   <title>Google Docs - Untitled document</title>
-  <link id="favicon" rel="icon" href="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">
+  <link rel="icon" href="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">
 
   <style>
-    body { margin:0; font-family:Arial; background:#0a0a0a; color:#e0e0e0; text-align:center; padding:20px; }
-    h1 { color:#00ff9d; margin-bottom:20px; text-shadow:0 0 10px #00ff9d; }
-    .info { color:#888; margin-bottom:30px; }
-    .menu { max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #00ff9d;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #00ff9d;
+    }
+    .info {
+      color: #888;
+      margin-bottom: 30px;
+    }
+    .menu {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
     .game-card {
-      width:240px; height:140px; background:#1e1e1e; border:2px solid #333; border-radius:12px;
-      cursor:pointer; transition:all 0.25s; box-shadow:0 4px 15px rgba(0,0,0,0.6);
-      display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:bold;
-      text-transform:uppercase; letter-spacing:1px; position:relative;
+      width: 240px;
+      height: 140px;
+      background: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
-    .game-card:hover { transform:translateY(-8px) scale(1.05); box-shadow:0 12px 30px rgba(0,255,157,0.4); border-color:#00ff9d; }
-    .remove-btn {
-      position:absolute; top:5px; right:5px; background:#ff2d55; color:white; border:none;
-      border-radius:50%; width:24px; height:24px; font-size:14px; cursor:pointer; line-height:24px;
+    .game-card:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(0,255,157,0.4);
+      border-color: #00ff9d;
     }
-    .add-btn {
-      position:fixed; top:15px; right:150px; padding:12px 24px; background:#00ff9d; border:none;
-      color:black; font-weight:bold; border-radius:8px; cursor:pointer; font-size:16px; z-index:10000;
+    #gameFrame {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      border: none;
+      display: none;
+      z-index: 9999;
+      background: #000;
     }
-    .settings-btn {
-      position:fixed; top:15px; right:15px; padding:10px 20px; background:#0066ff; border:none;
-      color:white; border-radius:8px; cursor:pointer; font-size:16px; z-index:10000;
+    #backBtn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 10000;
+      padding: 12px 24px;
+      background: #ff2d55;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      display: none;
     }
-    .settings-panel {
-      position:fixed; top:60px; right:15px; background:#222; padding:20px; border-radius:12px;
-      box-shadow:0 0 20px rgba(0,0,0,0.8); display:none; z-index:10000; width:340px; max-height:80vh;
-      overflow-y:auto; text-align:left;
-    }
-    .settings-panel input { width:100%; padding:8px; margin:10px 0; background:#333; border:1px solid #555; color:white; border-radius:6px; }
-    .save-btn { width:100%; padding:12px; background:#00ff9d; border:none; color:black; font-weight:bold; border-radius:8px; cursor:pointer; margin-top:15px; }
-    #gameFrame { width:100vw; height:100vh; position:fixed; top:0; left:0; border:none; display:none; z-index:9999; background:#000; }
-    #backBtn { position:fixed; top:15px; left:15px; z-index:10000; padding:12px 24px; background:#ff2d55; border:none; color:white; font-size:16px; cursor:pointer; border-radius:8px; display:none; }
-    .error-screen {
-      position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; color:#fff;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10001;
-      padding:20px; box-sizing:border-box;
-    }
-    .error-screen h2 { color:#ff2d55; margin-bottom:20px; }
-    .error-screen pre { background:#222; padding:15px; border-radius:8px; max-width:90%; overflow:auto; text-align:left; font-size:0.9rem; white-space:pre-wrap; }
   </style>
 </head>
 <body>
-  <button class="settings-btn" onclick="toggleSettings()">설정 (탭 제목/아이콘 변경)</button>
-  <button class="add-btn" onclick="addGame()">+ 게임 파일 추가</button>
-
-  <div class="settings-panel" id="settingsPanel">
-    <h3>탭 설정</h3>
-    <label>탭 제목:</label>
-    <input type="text" id="titleInput" value="Google Docs - Untitled document">
-
-    <label>아이콘 URL:</label>
-    <input type="text" id="iconInput" value="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">
-
-    <button class="save-btn" onclick="saveSettings()">저장</button>
-  </div>
-
   <h1>오프라인 게임 모음</h1>
   <p class="info">
-    "+ 게임 파일 추가" 버튼 눌러 .html 파일 선택하면 자동 등록돼요!<br>
-    (Ruffle/Unity 게임은 로컬에서 검은 화면 뜰 수 있어요. 해결법은 아래 에러 메시지 참조)
+    games 폴더에 .html 파일만 넣으면 자동으로 메뉴에 추가돼요!<br>
+    (파일 이름 = 게임 제목, 예: "super-mario.html" → "SUPER MARIO" 버튼)
   </p>
 
   <div class="menu" id="menu"></div>
@@ -75,96 +95,37 @@
   <iframe id="gameFrame" allowfullscreen allow="fullscreen;pointer-lock;gamepad"></iframe>
   <button id="backBtn" onclick="closeGame()">게임 종료하고 돌아가기</button>
 
-  <div class="error-screen" id="errorScreen" style="display:none;">
-    <h2>문제가 발생했습니다 :'(</h2>
-    <pre id="errorInfo"></pre>
-    <p style="color:#888; margin-top:20px;">
-      **로컬에서 Ruffle/Unity 게임이 안 될 때 해결법**<br>
-      1. Chrome 확장 "Web Server for Chrome" 설치 → 폴더 선택 → localhost로 실행<br>
-      2. GitHub Pages에 업로드해서 온라인으로 플레이 (https 프로토콜이라 대부분 해결)<br>
-      3. 친구한테 부탁해서 집 PC에서 테스트
-    </p>
-    <button onclick="hideError()">닫기</button>
-  </div>
-
   <script>
     const menu = document.getElementById('menu');
-    const errorScreen = document.getElementById('errorScreen');
-    const errorInfo = document.getElementById('errorInfo');
 
-    let games = JSON.parse(localStorage.getItem('addedGames')) || [];
+    // games 폴더 안 파일 목록을 수동으로 나열 (실제로는 파일 시스템 접근 불가라 미리 목록 작성)
+    // 친구들이 새 게임 추가할 때마다 여기에 파일 이름만 추가하면 됨
+    const gameFiles = [
+      'mario-kart.html',
+      'pacman.html',
+      'tetris.html',
+      'sonic.html'
+      // 새 게임 추가 시 여기에 파일 이름만 넣기 (games 폴더에 넣은 파일 이름과 동일하게!)
+    ];
 
-    function loadMenu() {
-      menu.innerHTML = '';
-      games.forEach((game, index) => {
-        const btn = document.createElement('div');
-        btn.className = 'game-card';
-        btn.innerHTML = `
-          ${game.name}
-          <button class="remove-btn" onclick="removeGame(${index}); event.stopPropagation();">X</button>
-        `;
-        btn.onclick = () => playGame(game.url);
-        menu.appendChild(btn);
-      });
+    gameFiles.forEach(file => {
+      const name = file.replace('.html', '').replace(/-/g, ' ').toUpperCase();
+      const btn = document.createElement('div');
+      btn.className = 'game-card';
+      btn.textContent = name;
+      btn.onclick = () => playGame(`games/${file}`);
+      menu.appendChild(btn);
+    });
 
-      if (games.length === 0) {
-        menu.innerHTML = '<p style="color:#888;">아직 게임이 없어요!<br>"+ 게임 파일 추가" 버튼 눌러서 .html 파일 선택하세요.</p>';
-      }
-    }
-
-    loadMenu();
-
-    async function addGame() {
-      try {
-        const pickerOpts = {
-          types: [{
-            description: 'HTML Files',
-            accept: {'text/html': ['.html']}
-          }],
-          multiple: false
-        };
-
-        const [fileHandle] = await window.showOpenFilePicker(pickerOpts);
-        const file = await fileHandle.getFile();
-        const url = URL.createObjectURL(file);
-
-        const game = {
-          name: file.name.replace(/\.html$/i, ''),
-          url: url
-        };
-
-        games.push(game);
-        localStorage.setItem('addedGames', JSON.stringify(games));
-        loadMenu();
-
-        alert(`"${game.name}" 게임이 추가됐어요!`);
-      } catch (err) {
-        console.error('파일 선택 오류:', err);
-        showError(`파일 선택 오류: ${err.message}\n\n로컬 파일에서 일부 게임(Ruffle/Unity)은 보안 제한으로 검은 화면이 뜰 수 있어요.\n\n해결:\n- "Web Server for Chrome" 확장으로 localhost 실행\n- GitHub Pages에 업로드해서 온라인 플레이`);
-      }
-    }
-
-    function removeGame(index) {
-      if (confirm('이 게임을 제거할까요?')) {
-        games.splice(index, 1);
-        localStorage.setItem('addedGames', JSON.stringify(games));
-        loadMenu();
-      }
+    // 게임이 없으면 안내 문구
+    if (gameFiles.length === 0) {
+      menu.innerHTML = '<p style="color:#888;">아직 게임이 없어요!<br>games 폴더에 .html 파일 넣고 새로고침 해보세요.</p>';
     }
 
     function playGame(url) {
-      const frame = document.getElementById('gameFrame');
-      frame.src = url;
-      frame.style.display = 'block';
+      document.getElementById('gameFrame').src = url;
+      document.getElementById('gameFrame').style.display = 'block';
       document.getElementById('backBtn').style.display = 'block';
-
-      frame.onload = () => {
-        // 로딩 성공 시 아무것도 안 함
-      };
-
-      frame.onerror = () => {
-        showError('게임 로딩 실패\n\n원인 가능성:\n1. 파일이 손상됐거나 호환되지 않음\n2. 로컬 보안 제한 (Ruffle/Unity 게임은 file:///에서 자주 실패)\n\n해결:\n- Chrome 확장 "Web Server for Chrome" 설치 → localhost로 실행\n- GitHub Pages에 업로드해서 온라인 플레이\n- 다른 브라우저(Edge)로 시도');
-      };
     }
 
     function closeGame() {
@@ -173,44 +134,16 @@
       document.getElementById('backBtn').style.display = 'none';
     }
 
-    function toggleSettings() {
-      const panel = document.getElementById('settingsPanel');
-      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-    }
-
-    function saveSettings() {
-      const newTitle = document.getElementById('titleInput').value;
-      const newIcon = document.getElementById('iconInput').value;
-
-      document.title = newTitle;
-      let link = document.getElementById('favicon') || document.createElement('link');
-      link.id = 'favicon';
+    // 탭 위장 (고가디언 대비)
+    const fakeTitle = "Google Docs - Untitled document";
+    const fakeFavicon = "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico";
+    setInterval(() => {
+      document.title = fakeTitle;
+      let link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
       link.rel = 'icon';
-      link.href = newIcon;
+      link.href = fakeFavicon;
       document.head.appendChild(link);
-
-      alert('탭 제목과 아이콘이 바뀌었어요!');
-      toggleSettings();
-    }
-
-    function showError(msg) {
-      errorInfo.textContent = msg;
-      errorScreen.style.display = 'flex';
-    }
-
-    function hideError() {
-      errorScreen.style.display = 'none';
-    }
-
-    window.onload = () => {
-      document.title = "Google Docs - Untitled document";
-      let link = document.createElement('link');
-      link.id = 'favicon';
-      link.rel = 'icon';
-      link.href = "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico";
-      document.head.appendChild(link);
-      loadMenu();
-    };
+    }, 1000);
   </script>
 </body>
 </html>
