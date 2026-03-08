@@ -4,192 +4,49 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- 기본 탭 제목과 아이콘 (세팅에서 변경 가능) -->
   <title>Google Docs - Untitled document</title>
   <link id="favicon" rel="icon" href="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">
 
   <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0a0a0a;
-      color: #e0e0e0;
-      text-align: center;
-      padding: 20px;
-    }
-    h1 {
-      color: #00ff9d;
-      margin-bottom: 20px;
-      text-shadow: 0 0 10px #00ff9d;
-    }
-    .info {
-      color: #888;
-      margin-bottom: 30px;
-    }
-    .menu {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-    }
+    body { margin:0; font-family:Arial; background:#0a0a0a; color:#e0e0e0; text-align:center; padding:20px; }
+    h1 { color:#00ff9d; margin-bottom:20px; text-shadow:0 0 10px #00ff9d; }
+    .info { color:#888; margin-bottom:30px; }
+    .menu { max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
     .game-card {
-      width: 240px;
-      height: 140px;
-      background: #1e1e1e;
-      border: 2px solid #333;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.1rem;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      position: relative;
+      width:240px; height:140px; background:#1e1e1e; border:2px solid #333; border-radius:12px;
+      cursor:pointer; transition:all 0.25s; box-shadow:0 4px 15px rgba(0,0,0,0.6);
+      display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:bold;
+      text-transform:uppercase; letter-spacing:1px; position:relative;
     }
-    .game-card:hover {
-      transform: translateY(-8px) scale(1.05);
-      box-shadow: 0 12px 30px rgba(0,255,157,0.4);
-      border-color: #00ff9d;
-    }
-    .game-card .remove {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: #ff2d55;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      font-size: 14px;
-      cursor: pointer;
-      line-height: 24px;
-      text-align: center;
+    .game-card:hover { transform:translateY(-8px) scale(1.05); box-shadow:0 12px 30px rgba(0,255,157,0.4); border-color:#00ff9d; }
+    .remove-btn {
+      position:absolute; top:5px; right:5px; background:#ff2d55; color:white; border:none;
+      border-radius:50%; width:24px; height:24px; font-size:14px; cursor:pointer; line-height:24px;
     }
     .add-btn {
-      position: fixed;
-      top: 15px;
-      right: 150px;
-      padding: 12px 24px;
-      background: #00ff9d;
-      border: none;
-      color: black;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      z-index: 10000;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      position:fixed; top:15px; right:150px; padding:12px 24px; background:#00ff9d; border:none;
+      color:black; font-weight:bold; border-radius:8px; cursor:pointer; font-size:16px; z-index:10000;
     }
     .settings-btn {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      padding: 10px 20px;
-      background: #0066ff;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      z-index: 10000;
+      position:fixed; top:15px; right:15px; padding:10px 20px; background:#0066ff; border:none;
+      color:white; border-radius:8px; cursor:pointer; font-size:16px; z-index:10000;
     }
     .settings-panel {
-      position: fixed;
-      top: 60px;
-      right: 15px;
-      background: #222;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.8);
-      display: none;
-      z-index: 10000;
-      width: 340px;
-      max-height: 80vh;
-      overflow-y: auto;
-      text-align: left;
+      position:fixed; top:60px; right:15px; background:#222; padding:20px; border-radius:12px;
+      box-shadow:0 0 20px rgba(0,0,0,0.8); display:none; z-index:10000; width:340px; max-height:80vh;
+      overflow-y:auto; text-align:left;
     }
-    .settings-panel input {
-      width: 100%;
-      padding: 8px;
-      margin: 10px 0;
-      background: #333;
-      border: 1px solid #555;
-      color: white;
-      border-radius: 6px;
-    }
-    .save-btn {
-      width: 100%;
-      padding: 12px;
-      background: #00ff9d;
-      border: none;
-      color: black;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-    #gameFrame {
-      width: 100vw;
-      height: 100vh;
-      position: fixed;
-      top: 0;
-      left: 0;
-      border: none;
-      display: none;
-      z-index: 9999;
-      background: #000;
-    }
-    #backBtn {
-      position: fixed;
-      top: 15px;
-      left: 15px;
-      z-index: 10000;
-      padding: 12px 24px;
-      background: #ff2d55;
-      border: none;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      border-radius: 8px;
-      display: none;
-    }
+    .settings-panel input { width:100%; padding:8px; margin:10px 0; background:#333; border:1px solid #555; color:white; border-radius:6px; }
+    .save-btn { width:100%; padding:12px; background:#00ff9d; border:none; color:black; font-weight:bold; border-radius:8px; cursor:pointer; margin-top:15px; }
+    #gameFrame { width:100vw; height:100vh; position:fixed; top:0; left:0; border:none; display:none; z-index:9999; background:#000; }
+    #backBtn { position:fixed; top:15px; left:15px; z-index:10000; padding:12px 24px; background:#ff2d55; border:none; color:white; font-size:16px; cursor:pointer; border-radius:8px; display:none; }
     .error-screen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: #000;
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 10001;
-      padding: 20px;
-      box-sizing: border-box;
+      position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; color:#fff;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10001;
+      padding:20px; box-sizing:border-box;
     }
-    .error-screen h2 {
-      color: #ff2d55;
-      margin-bottom: 20px;
-    }
-    .error-screen pre {
-      background: #222;
-      padding: 15px;
-      border-radius: 8px;
-      max-width: 90%;
-      overflow: auto;
-      text-align: left;
-      font-size: 0.9rem;
-      white-space: pre-wrap;
-    }
+    .error-screen h2 { color:#ff2d55; margin-bottom:20px; }
+    .error-screen pre { background:#222; padding:15px; border-radius:8px; max-width:90%; overflow:auto; text-align:left; font-size:0.9rem; white-space:pre-wrap; }
   </style>
 </head>
 <body>
@@ -209,7 +66,7 @@
 
   <h1>오프라인 게임 모음</h1>
   <p class="info">
-    "+ 게임 파일 추가" 버튼 눌러서 .html 파일 선택하기만 하면 자동 등록돼요!<br>
+    "+ 게임 파일 추가" 버튼 눌러 .html 파일 선택하면 자동 등록돼요!<br>
     (선택한 파일 이름이 게임 제목이 됩니다)
   </p>
 
@@ -231,7 +88,6 @@
 
     let games = JSON.parse(localStorage.getItem('addedGames')) || [];
 
-    // 메뉴 로드
     function loadMenu() {
       menu.innerHTML = '';
       games.forEach((game, index) => {
@@ -267,7 +123,7 @@
         const url = URL.createObjectURL(file);
 
         const game = {
-          name: file.name.replace(/\.html$/i, ''), // .html 제거해서 제목으로
+          name: file.name.replace(/\.html$/i, ''),
           url: url
         };
 
@@ -278,7 +134,7 @@
         alert(`"${game.name}" 게임이 추가됐어요!`);
       } catch (err) {
         console.error('파일 선택 오류:', err);
-        showError(`파일 선택 오류: ${err.message}`);
+        showError(`파일 선택 오류: ${err.message}\n\n로컬 파일에서 일부 게임(Ruffle/Unity)은 보안 제한으로 검은 화면이 뜰 수 있어요.\n확장 "Web Server for Chrome" 설치하거나 GitHub Pages로 온라인 실행 추천!`);
       }
     }
 
@@ -297,7 +153,7 @@
       document.getElementById('backBtn').style.display = 'block';
 
       frame.onerror = () => {
-        showError('게임 로딩 실패: 파일이 손상됐거나 호환되지 않을 수 있어요.\nRuffle 게임은 브라우저 보안으로 로컬에서 제한될 수 있습니다.');
+        showError('게임 로딩 실패\n\n원인 가능성:\n1. 파일이 손상됨\n2. 로컬 보안 제한 (Ruffle/Unity 게임은 file:///에서 자주 실패)\n\n해결:\n- "Web Server for Chrome" 확장으로 localhost 실행\n- GitHub Pages에 업로드해서 온라인 플레이');
       };
     }
 
@@ -336,7 +192,6 @@
       errorScreen.style.display = 'none';
     }
 
-    // 기본 위장 적용
     window.onload = () => {
       document.title = "Google Docs - Untitled document";
       let link = document.createElement('link');
