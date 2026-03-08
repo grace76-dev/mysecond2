@@ -50,16 +50,32 @@
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 1px;
+      position: relative;
     }
     .game-card:hover {
       transform: translateY(-8px) scale(1.05);
       box-shadow: 0 12px 30px rgba(0,255,157,0.4);
       border-color: #00ff9d;
     }
+    .game-card .remove {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #ff2d55;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      font-size: 14px;
+      cursor: pointer;
+      line-height: 24px;
+      text-align: center;
+    }
     .add-btn {
       position: fixed;
       top: 15px;
-      right: 15px;
+      right: 150px;
       padding: 12px 24px;
       background: #00ff9d;
       border: none;
@@ -74,7 +90,7 @@
     .settings-btn {
       position: fixed;
       top: 15px;
-      left: 15px;
+      right: 15px;
       padding: 10px 20px;
       background: #0066ff;
       border: none;
@@ -87,7 +103,7 @@
     .settings-panel {
       position: fixed;
       top: 60px;
-      left: 15px;
+      right: 15px;
       background: #222;
       padding: 20px;
       border-radius: 12px;
@@ -144,6 +160,36 @@
       border-radius: 8px;
       display: none;
     }
+    .error-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+    .error-screen h2 {
+      color: #ff2d55;
+      margin-bottom: 20px;
+    }
+    .error-screen pre {
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+      max-width: 90%;
+      overflow: auto;
+      text-align: left;
+      font-size: 0.9rem;
+      white-space: pre-wrap;
+    }
   </style>
 </head>
 <body>
@@ -172,17 +218,29 @@
   <iframe id="gameFrame" allowfullscreen allow="fullscreen;pointer-lock;gamepad"></iframe>
   <button id="backBtn" onclick="closeGame()">게임 종료하고 돌아가기</button>
 
+  <div class="error-screen" id="errorScreen" style="display:none;">
+    <h2>문제가 발생했습니다 :'(</h2>
+    <pre id="errorInfo"></pre>
+    <button onclick="hideError()">닫기</button>
+  </div>
+
   <script>
     const menu = document.getElementById('menu');
-    let games = JSON.parse(localStorage.getItem('addedGames')) || []; // 추가된 게임 목록 저장
+    const errorScreen = document.getElementById('errorScreen');
+    const errorInfo = document.getElementById('errorInfo');
 
-    // 추가된 게임 메뉴 로드
+    let games = JSON.parse(localStorage.getItem('addedGames')) || [];
+
+    // 메뉴 로드
     function loadMenu() {
       menu.innerHTML = '';
-      games.forEach(game => {
+      games.forEach((game, index) => {
         const btn = document.createElement('div');
         btn.className = 'game-card';
-        btn.textContent = game.name;
+        btn.innerHTML = `
+          ${game.name}
+          <button class="remove" onclick="removeGame(${index}); event.stopPropagation();">X</button>
+        `;
         btn.onclick = () => playGame(game.url);
         menu.appendChild(btn);
       });
@@ -192,16 +250,14 @@
       }
     }
 
-    loadMenu(); // 페이지 로드 시 메뉴 생성
+    loadMenu();
 
     async function addGame() {
       try {
         const pickerOpts = {
           types: [{
             description: 'HTML Files',
-            accept: {
-              'text/html': ['.html']
-            }
+            accept: {'text/html': ['.html']}
           }],
           multiple: false
         };
@@ -211,7 +267,7 @@
         const url = URL.createObjectURL(file);
 
         const game = {
-          name: file.name.replace('.html', ''), // 파일 이름에서 .html 제거해서 제목으로 사용
+          name: file.name.replace(/\.html$/i, ''), // .html 제거해서 제목으로
           url: url
         };
 
@@ -219,17 +275,30 @@
         localStorage.setItem('addedGames', JSON.stringify(games));
         loadMenu();
 
-        alert(`"${game.name}" 게임이 추가됐어요! 메뉴에서 클릭해서 플레이하세요.`);
+        alert(`"${game.name}" 게임이 추가됐어요!`);
       } catch (err) {
         console.error('파일 선택 오류:', err);
-        alert('파일 선택이 취소됐거나 오류가 발생했어요. 다시 시도해주세요.');
+        showError(`파일 선택 오류: ${err.message}`);
+      }
+    }
+
+    function removeGame(index) {
+      if (confirm('이 게임을 제거할까요?')) {
+        games.splice(index, 1);
+        localStorage.setItem('addedGames', JSON.stringify(games));
+        loadMenu();
       }
     }
 
     function playGame(url) {
-      document.getElementById('gameFrame').src = url;
-      document.getElementById('gameFrame').style.display = 'block';
+      const frame = document.getElementById('gameFrame');
+      frame.src = url;
+      frame.style.display = 'block';
       document.getElementById('backBtn').style.display = 'block';
+
+      frame.onerror = () => {
+        showError('게임 로딩 실패: 파일이 손상됐거나 호환되지 않을 수 있어요.\nRuffle 게임은 브라우저 보안으로 로컬에서 제한될 수 있습니다.');
+      };
     }
 
     function closeGame() {
@@ -258,7 +327,16 @@
       toggleSettings();
     }
 
-    // 페이지 로드 시 기본 위장 적용
+    function showError(msg) {
+      errorInfo.textContent = msg;
+      errorScreen.style.display = 'flex';
+    }
+
+    function hideError() {
+      errorScreen.style.display = 'none';
+    }
+
+    // 기본 위장 적용
     window.onload = () => {
       document.title = "Google Docs - Untitled document";
       let link = document.createElement('link');
@@ -266,6 +344,7 @@
       link.rel = 'icon';
       link.href = "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico";
       document.head.appendChild(link);
+      loadMenu();
     };
   </script>
 </body>
