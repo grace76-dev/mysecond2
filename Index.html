@@ -40,13 +40,6 @@
     .save-btn { width:100%; padding:12px; background:#00ff9d; border:none; color:black; font-weight:bold; border-radius:8px; cursor:pointer; margin-top:15px; }
     #gameFrame { width:100vw; height:100vh; position:fixed; top:0; left:0; border:none; display:none; z-index:9999; background:#000; }
     #backBtn { position:fixed; top:15px; left:15px; z-index:10000; padding:12px 24px; background:#ff2d55; border:none; color:white; font-size:16px; cursor:pointer; border-radius:8px; display:none; }
-    .error-screen {
-      position:fixed; top:0; left:0; width:100vw; height:100vh; background:#000; color:#fff;
-      display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:10001;
-      padding:20px; box-sizing:border-box;
-    }
-    .error-screen h2 { color:#ff2d55; margin-bottom:20px; }
-    .error-screen pre { background:#222; padding:15px; border-radius:8px; max-width:90%; overflow:auto; text-align:left; font-size:0.9rem; white-space:pre-wrap; }
   </style>
 </head>
 <body>
@@ -75,17 +68,8 @@
   <iframe id="gameFrame" allowfullscreen allow="fullscreen;pointer-lock;gamepad"></iframe>
   <button id="backBtn" onclick="closeGame()">게임 종료하고 돌아가기</button>
 
-  <div class="error-screen" id="errorScreen" style="display:none;">
-    <h2>문제가 발생했습니다 :'(</h2>
-    <pre id="errorInfo"></pre>
-    <button onclick="hideError()">닫기</button>
-  </div>
-
   <script>
     const menu = document.getElementById('menu');
-    const errorScreen = document.getElementById('errorScreen');
-    const errorInfo = document.getElementById('errorInfo');
-
     let games = JSON.parse(localStorage.getItem('addedGames')) || [];
 
     function loadMenu() {
@@ -95,14 +79,14 @@
         btn.className = 'game-card';
         btn.innerHTML = `
           ${game.name}
-          <button class="remove" onclick="removeGame(${index}); event.stopPropagation();">X</button>
+          <button class="remove-btn" onclick="removeGame(${index}); event.stopPropagation();">X</button>
         `;
         btn.onclick = () => playGame(game.url);
         menu.appendChild(btn);
       });
 
       if (games.length === 0) {
-        menu.innerHTML = '<p style="color:#888;">아직 게임이 없어요!<br>"+ 게임 파일 추가" 버튼 눌러서 시작하세요.</p>';
+        menu.innerHTML = '<p style="color:#888;">아직 게임이 없어요!<br>"+ 게임 파일 추가" 버튼 눌러서 .html 파일 선택하세요.</p>';
       }
     }
 
@@ -134,7 +118,7 @@
         alert(`"${game.name}" 게임이 추가됐어요!`);
       } catch (err) {
         console.error('파일 선택 오류:', err);
-        showError(`파일 선택 오류: ${err.message}\n\n로컬 파일에서 일부 게임(Ruffle/Unity)은 보안 제한으로 검은 화면이 뜰 수 있어요.\n확장 "Web Server for Chrome" 설치하거나 GitHub Pages로 온라인 실행 추천!`);
+        alert('파일 선택이 취소됐거나 오류가 발생했어요.\n\n로컬 파일에서 일부 게임(Ruffle/Unity)은 보안 제한으로 검은 화면이 뜰 수 있어요.\n확장 "Web Server for Chrome" 설치하거나 GitHub Pages로 온라인 실행 추천!');
       }
     }
 
@@ -147,14 +131,9 @@
     }
 
     function playGame(url) {
-      const frame = document.getElementById('gameFrame');
-      frame.src = url;
-      frame.style.display = 'block';
+      document.getElementById('gameFrame').src = url;
+      document.getElementById('gameFrame').style.display = 'block';
       document.getElementById('backBtn').style.display = 'block';
-
-      frame.onerror = () => {
-        showError('게임 로딩 실패\n\n원인 가능성:\n1. 파일이 손상됨\n2. 로컬 보안 제한 (Ruffle/Unity 게임은 file:///에서 자주 실패)\n\n해결:\n- "Web Server for Chrome" 확장으로 localhost 실행\n- GitHub Pages에 업로드해서 온라인 플레이');
-      };
     }
 
     function closeGame() {
@@ -181,15 +160,6 @@
 
       alert('탭 제목과 아이콘이 바뀌었어요!');
       toggleSettings();
-    }
-
-    function showError(msg) {
-      errorInfo.textContent = msg;
-      errorScreen.style.display = 'flex';
-    }
-
-    function hideError() {
-      errorScreen.style.display = 'none';
     }
 
     window.onload = () => {
