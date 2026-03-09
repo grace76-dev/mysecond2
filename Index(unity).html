@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- 탭 제목과 아이콘 (필요하면 여기서 바꾸기) -->
+  <title>Unity 게임 모음</title>
+  <link rel="icon" href="https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico">
+
+  <style>
+    body { margin:0; font-family:Arial,sans-serif; background:#0a0a0a; color:#e0e0e0; text-align:center; padding:20px; }
+    h1 { color:#00ff9d; margin-bottom:20px; text-shadow:0 0 10px #00ff9d; }
+    .info { color:#888; margin-bottom:30px; font-size:0.95rem; }
+    .menu { max-width:1000px; margin:0 auto; display:flex; flex-wrap:wrap; justify-content:center; gap:20px; }
+    .game-card {
+      width:240px; height:140px; background:#1e1e1e; border:2px solid #333; border-radius:12px;
+      cursor:pointer; transition:all 0.25s; box-shadow:0 4px 15px rgba(0,0,0,0.6);
+      display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:bold;
+      text-transform:uppercase; letter-spacing:1px;
+    }
+    .game-card:hover { transform:translateY(-8px) scale(1.05); box-shadow:0 12px 30px rgba(0,255,157,0.4); border-color:#00ff9d; }
+    #gameFrame { width:100vw; height:100vh; position:fixed; top:0; left:0; border:none; display:none; z-index:9999; background:#000; }
+    #backBtn { position:fixed; top:15px; left:15px; z-index:10000; padding:12px 24px; background:#ff2d55; border:none; color:white; font-size:16px; cursor:pointer; border-radius:8px; display:none; }
+  </style>
+</head>
+<body>
+  <h1>Unity 게임 모음</h1>
+  <p class="info">
+    unity-games 폴더에 게임 폴더만 넣으면 자동으로 메뉴에 추가돼요!<br>
+    (각 게임 폴더 안에 index.html 파일이 필수예요)
+  </p>
+
+  <div class="menu" id="menu"></div>
+
+  <iframe id="gameFrame" allowfullscreen allow="fullscreen;pointer-lock;gamepad"></iframe>
+  <button id="backBtn" onclick="closeGame()">게임 종료하고 돌아가기</button>
+
+  <script>
+    const menu = document.getElementById('menu');
+
+    // unity-games 폴더 안의 게임 폴더 목록 (실제로는 수동으로 나열 – 자동 스캔은 브라우저에서 불가)
+    // 사용자가 새 폴더 추가할 때마다 여기에 폴더 이름만 추가하면 자동 버튼 생성
+    const gameFolders = [
+      'my-game1',       // 폴더 이름 = 게임 제목 기본값
+      'my-game2',
+      'super-mario-unity',
+      'unity-demo'
+      // 새 게임 폴더 추가 시 여기에 폴더 이름만 넣기 (unity-games 안에 만든 폴더 이름과 동일하게!)
+    ];
+
+    gameFolders.forEach(folder => {
+      const btn = document.createElement('div');
+      btn.className = 'game-card';
+      btn.textContent = folder.replace(/-/g, ' ').toUpperCase();
+      btn.onclick = () => playGame(`unity-games/${folder}/index.html`);
+      menu.appendChild(btn);
+    });
+
+    // 게임이 없으면 안내 문구
+    if (gameFolders.length === 0) {
+      menu.innerHTML = '<p style="color:#888;">아직 게임이 없어요!<br>unity-games 폴더에 게임 폴더 넣고 새로고침 해보세요.</p>';
+    }
+
+    function playGame(url) {
+      document.getElementById('gameFrame').src = url;
+      document.getElementById('gameFrame').style.display = 'block';
+      document.getElementById('backBtn').style.display = 'block';
+    }
+
+    function closeGame() {
+      document.getElementById('gameFrame').src = '';
+      document.getElementById('gameFrame').style.display = 'none';
+      document.getElementById('backBtn').style.display = 'none';
+    }
+
+    // 탭 위장 (고가디언 대비)
+    const fakeTitle = "Google Docs - Untitled document";
+    const fakeFavicon = "https://ssl.gstatic.com/docs/documents/images/kix-favicon7.ico";
+    setInterval(() => {
+      document.title = fakeTitle;
+      let link = document.querySelector('link[rel*="icon"]') || document.createElement('link');
+      link.rel = 'icon';
+      link.href = fakeFavicon;
+      document.head.appendChild(link);
+    }, 1000);
+  </script>
+</body>
+</html>
